@@ -1,0 +1,36 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(uuid()) @db.Uuid
+  user_id        String   @unique @db.Uuid
+  name           String
+  email          String   @unique
+  isInsideWorker Boolean
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model WorkSession {
+  id         String    @id @default(uuid())
+  userId     String    @db.Uuid
+  start_time DateTime
+  end_time   DateTime?
+  key_type   KeyType
+  latitude   Float?
+  longitude  Float?
+  created_at DateTime  @default(now())
+}
+
+enum KeyType {
+  standard
+  extra
+}
