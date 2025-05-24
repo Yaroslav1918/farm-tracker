@@ -29,6 +29,7 @@ export async function signup(formData: FormData) {
   const name = formData.get("name") as string;
   const isInsideWorker = formData.get("isInsideWorker") === "on";
   
+
   await supabase.auth.signUp({
     email,
     password,
