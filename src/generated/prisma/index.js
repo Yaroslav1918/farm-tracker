@@ -172,7 +172,11 @@ const config = {
       },
       {
         "fromEnvVar": null,
-        "value": "rhel-openssl-1.0.x"
+        "value": "linux-musl"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "rhel-openssl-3.0.x"
       }
     ],
     "previewFeatures": [
@@ -201,8 +205,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider        = \"prisma-client-js\"\n  output          = \"../src/generated/prisma\"\n  previewFeatures = [\"multiSchema\"]\n  binaryTargets   = [\"native\", \"rhel-openssl-1.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id             String   @id @default(uuid()) @db.Uuid\n  user_id        String   @unique @db.Uuid\n  name           String\n  email          String   @unique\n  isInsideWorker Boolean\n  createdAt      DateTime @default(now())\n  updatedAt      DateTime @updatedAt\n}\n\nmodel WorkSession {\n  id         String    @id @default(uuid())\n  userId     String    @db.Uuid\n  start_time DateTime\n  end_time   DateTime?\n  key_type   KeyType\n  latitude   Float?\n  longitude  Float?\n  created_at DateTime  @default(now())\n}\n\nmodel LunchSession {\n  id        String    @id @default(uuid())\n  userId    String\n  startTime DateTime\n  endTime   DateTime?\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n}\n\nenum KeyType {\n  standard\n  extra\n}\n",
-  "inlineSchemaHash": "cc022417cc3363e1cab3d0b5ae2f5ed1451832dc5baebf96cfb2e834320d59b6",
+  "inlineSchema": "generator client {\n  provider        = \"prisma-client-js\"\n  output          = \"../src/generated/prisma\"\n  previewFeatures = [\"multiSchema\"]\n  binaryTargets   = [\"native\", \"linux-musl\", \"rhel-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id             String   @id @default(uuid()) @db.Uuid\n  user_id        String   @unique @db.Uuid\n  name           String\n  email          String   @unique\n  isInsideWorker Boolean\n  createdAt      DateTime @default(now())\n  updatedAt      DateTime @updatedAt\n}\n\nmodel WorkSession {\n  id         String    @id @default(uuid())\n  userId     String    @db.Uuid\n  start_time DateTime\n  end_time   DateTime?\n  key_type   KeyType\n  latitude   Float?\n  longitude  Float?\n  created_at DateTime  @default(now())\n}\n\nmodel LunchSession {\n  id        String    @id @default(uuid())\n  userId    String\n  startTime DateTime\n  endTime   DateTime?\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n}\n\nenum KeyType {\n  standard\n  extra\n}\n",
+  "inlineSchemaHash": "436a84d4968df07e35cdaf9653e7caca6ec7dfe69277c054698100cfe4034eda",
   "copyEngine": true
 }
 
@@ -245,8 +249,12 @@ path.join(__dirname, "query_engine-windows.dll.node");
 path.join(process.cwd(), "src/generated/prisma/query_engine-windows.dll.node")
 
 // file annotations for bundling tools to include these files
-path.join(__dirname, "libquery_engine-rhel-openssl-1.0.x.so.node");
-path.join(process.cwd(), "src/generated/prisma/libquery_engine-rhel-openssl-1.0.x.so.node")
+path.join(__dirname, "libquery_engine-linux-musl.so.node");
+path.join(process.cwd(), "src/generated/prisma/libquery_engine-linux-musl.so.node")
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-rhel-openssl-3.0.x.so.node");
+path.join(process.cwd(), "src/generated/prisma/libquery_engine-rhel-openssl-3.0.x.so.node")
 // file annotations for bundling tools to include these files
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "src/generated/prisma/schema.prisma")
