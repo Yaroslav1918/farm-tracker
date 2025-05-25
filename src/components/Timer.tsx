@@ -17,7 +17,7 @@ const Timer = () => {
     latitude: number;
     longitude: number;
   } | null>(null);
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [elapsedTime, setElapsedTime] = useState<string>("00:00:00");

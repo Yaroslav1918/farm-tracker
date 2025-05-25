@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
 
 import { formatMilliseconds } from "@/lib/formatTime";
-import { set } from "date-fns";
+
 
 type DailyReport = {
   [date: string]: {
@@ -67,7 +67,9 @@ export default function ReportsPage() {
       <h1 className="text-xl font-bold mb-6 text-center">📋 Monthly Report</h1>
       {error && <p className="text-red-600 text-center">{error}</p>}
       <div className="bg-white shadow rounded-lg p-4 space-y-4">
-        {loading ? <p className="text-gray-600 text-center">Loading...</p> : null}
+        {loading ? (
+          <p className="text-gray-600 text-center">Loading...</p>
+        ) : null}
         {!loading && Object.entries(data).length === 0 && (
           <p className="text-center text-gray-600 font-semibold text-lg">
             No reports found.
