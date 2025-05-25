@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
 
 import { formatMilliseconds } from "@/lib/formatTime";
+import { set } from "date-fns";
 
 type DailyReport = {
   [date: string]: {
@@ -22,19 +23,10 @@ export default function ReportsPage() {
   const [, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    /*************  ✨ Windsurf Command ⭐  *************/
-    /**
-     * Fetches the daily report data for the current month from the server, and
-     * updates the component state accordingly.
-     *
-     * If there is an error when fetching the user data, sets the error state to
-     * the error message.
-     *
-     * @returns {Promise<void>} The promise returned from the function.
-     */
-    /*******  40c2fb92-3d4c-4b5e-875a-19cf7d5f33a5  *******/
+    setLoading(true);
     const fetchData = async () => {
       const { data, error: userError } = await supabase.auth.getUser();
       if (userError) {
@@ -53,6 +45,7 @@ export default function ReportsPage() {
       });
 
       const daily: DailyReport = res.data.daily;
+      setLoading(false);
       setData(daily);
 
       let totalWorkMs = 0;
@@ -71,21 +64,23 @@ export default function ReportsPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-4 mt-42">
-      <h1 className="text-2xl font-bold mb-6 text-center">📋 Monthly Report</h1>
+      <h1 className="text-xl font-bold mb-6 text-center">📋 Monthly Report</h1>
       {error && <p className="text-red-600 text-center">{error}</p>}
       <div className="bg-white shadow rounded-lg p-4 space-y-4">
-        {Object.entries(data).length === 0 && (
+        {loading ? <p className="text-gray-600 text-center">Loading...</p> : null}
+        {!loading && Object.entries(data).length === 0 && (
           <p className="text-center text-gray-600 font-semibold text-lg">
             No reports found.
           </p>
         )}
+
         {Object.entries(data).map(([date, times]) => (
           <div
             key={date}
             className="border-b pb-2 last:border-none flex justify-between text-sm md:text-base"
           >
-            <span className="font-medium mr-2">{date}</span>
-            <div className="flex gap-4">
+            <span className=" text-gray-600  mr-2 min-w-[50px]">{date}</span>
+            <div className="flex gap-3 ">
               <span className="text-green-700">
                 First key : {formatMilliseconds(times.standardWork)}
               </span>
@@ -100,7 +95,7 @@ export default function ReportsPage() {
         ))}
       </div>
 
-      <div className="mt-6 text-center font-semibold text-lg">
+      <div className="mt-6 text-center font-semibold text-sm md:text-lg">
         🧮 Total Work: {formatMilliseconds(totalWork)} | 🍱 Total Lunch:{" "}
         {formatMilliseconds(totalLunch)}
       </div>
@@ -108,7 +103,7 @@ export default function ReportsPage() {
       <div className="flex justify-end mb-4 print:hidden mt-4">
         <button
           onClick={() => window.print()}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
+          className="bg-blue-500 text-white px-4 py-2 text-sm rounded hover:bg-blue-600 cursor-pointer"
         >
           🖨️ Print Report
         </button>

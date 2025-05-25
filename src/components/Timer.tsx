@@ -252,7 +252,6 @@ const Timer = () => {
   return (
     <div className="flex flex-col gap-4 p-4 bg-[#fbf5fb] border border-gray-300 rounded-2xl shadow-md w-full max-w-2xl mx-auto mt-40 md:mt-40">
       <h2 className="text-xl font-semibold text-center">Work Timer</h2>
-      {error && <p className="text-red-500 text-center">{error}</p>}
       <>
         <button
           onClick={() => {
