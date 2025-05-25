@@ -1,16 +1,22 @@
-import type { NextConfig } from "next";
+// next.config.js
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const withPWA = require("next-pwa")({
+  dest: "public",
+  disable: process.env.NODE_ENV !== "production",
+  // (optionally) runtimeCaching: require('next-pwa/cache'),
+});
 
-const nextConfig: NextConfig = {
+const nextConfig = {
+  reactStrictMode: true,
   images: {
-    domains: ['tailwindcss.com'],
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'tailwindcss.com',
-        pathname: '/plus-assets/**',
+        protocol: "https",
+        hostname: "tailwindcss.com",
+        pathname: "/**",
       },
     ],
   },
 };
 
-export default nextConfig;
+module.exports = withPWA(nextConfig);

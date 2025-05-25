@@ -1,12 +1,13 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { User } from "@supabase/supabase-js";
 import axios from "axios";
+
 import { formatMilliseconds } from "../lib/formatTime";
 import { isWithinRadius } from "../lib/isWithinRadius";
 import { FARM_LOCATIONS } from "../lib/farmLocation";
+import { useOfflineSync } from "../lib/useOfflineSync";
 
 const Timer = () => {
   const [isInsideWorker, setIsIntsideWorker] = useState<boolean | null>(null);
@@ -31,8 +32,8 @@ const Timer = () => {
     useState("00:00:00");
   const [initialTotalTimeLunchMs, setInitialTotalTimeLunchMs] = useState(0);
   const [canStartExtra, setCanStartExtra] = useState(false);
-
   const supabase = createClient();
+  useOfflineSync();
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -93,7 +94,7 @@ const Timer = () => {
       await fetchTotalWorkTime(user.id);
       await fetchTotalLunchTime(user.id);
     };
-    checkLocation()
+    checkLocation();
     fetchUser();
   }, [supabase.auth]);
 
@@ -163,6 +164,12 @@ const Timer = () => {
 
     try {
       const res = await axios.post("/api/lunch/start", { userId: user.id });
+      localStorage.setItem(
+        "lunchSession",
+        JSON.stringify({
+          sessionId: res.data.sessionId,
+        })
+      );
       setLunchSessionId(res.data.sessionId);
       setLunchStartTime(new Date(res.data.startTime));
     } catch (err: unknown) {
@@ -173,10 +180,17 @@ const Timer = () => {
     if (!lunchSessionId || !user) return;
 
     try {
-      await axios.post("/api/lunch/stop", { sessionId: lunchSessionId });
-      setLunchSessionId(null);
-      setLunchStartTime(null);
-      await fetchTotalLunchTime(user.id);
+      if (navigator.onLine) {
+        await axios.post("/api/lunch/stop", { sessionId: lunchSessionId });
+        localStorage.removeItem("lunchSession");
+        setLunchSessionId(null);
+        setLunchStartTime(null);
+        await fetchTotalLunchTime(user.id);
+      } else {
+        alert(
+          "⚠️ You’re currently offline. Your session will be finalized when you reconnect."
+        );
+      }
     } catch (err: unknown) {
       setError((err as Error).message);
     }
@@ -204,7 +218,10 @@ const Timer = () => {
         latitude: location?.latitude,
         longitude: location?.longitude,
       });
-
+      localStorage.setItem(
+        "workSession",
+        JSON.stringify({ sessionId: res.data.sessionId })
+      );
       setCurrentSessionId(res.data.sessionId);
       setStartTime(new Date(res.data.startTime));
     } catch (err: unknown) {
@@ -216,10 +233,17 @@ const Timer = () => {
     if (!currentSessionId || !user) return;
 
     try {
-      await axios.post("/api/work/stop", { sessionId: currentSessionId });
-      setCurrentSessionId(null);
-      setStartTime(null);
-      await fetchTotalWorkTime(user.id);
+      if (navigator.onLine) {
+        await axios.post("/api/work/stop", { sessionId: currentSessionId });
+        localStorage.removeItem("workSession");
+        setCurrentSessionId(null);
+        setStartTime(null);
+        await fetchTotalWorkTime(user.id);
+      } else {
+        alert(
+          "⚠️ You’re currently offline. Your session will be finalized when you reconnect."
+        );
+      }
     } catch (err: unknown) {
       setError((err as Error).message);
     }
@@ -228,7 +252,7 @@ const Timer = () => {
   return (
     <div className="flex flex-col gap-4 p-4 bg-[#fbf5fb] border border-gray-300 rounded-2xl shadow-md w-full max-w-2xl mx-auto mt-40 md:mt-40">
       <h2 className="text-xl font-semibold text-center">Work Timer</h2>
-
+      {error && <p className="text-red-500 text-center">{error}</p>}
       <>
         <button
           onClick={() => {
@@ -291,7 +315,7 @@ const Timer = () => {
         {lunchSessionId ? (
           <button
             onClick={handleEndLunch}
-            className="w-full rounded-lg bg-[#D6DAFF] hover:bg-[#C7CCFF] text-gray-800 font-medium py-2 transition cursor-pointer"
+            className="w-full rounded-lg bg-orange-300 hover:bg-orange-350 text-gray-800 font-medium py-2 transition cursor-pointer"
           >
             End Lunch
           </button>
