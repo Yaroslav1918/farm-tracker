@@ -27,7 +27,10 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ sessionId: newSession.id });
+    return NextResponse.json({
+      sessionId: newSession.id,
+      startTime: newSession.start_time,
+    });
   } catch (error: unknown) {
     return NextResponse.json(
       { error: (error as Error).message },

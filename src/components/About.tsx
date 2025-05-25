@@ -20,7 +20,7 @@ export default function About() {
           </h3>
           <p className="text-gray-700">
             Revenue in 2023 reached <strong>€2.15 million</strong>, with a{" "}
-            <strong>12.9% decrease</strong>
+            <strong>12.9% decrease </strong>
             compared to the previous year. Operating profit was a modest{" "}
             <strong>0.2%</strong>.
           </p>

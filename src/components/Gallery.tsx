@@ -43,7 +43,7 @@ export default function Gallery() {
         <Image
           className="object-cover  rounded-lg"
           sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-          src="/farm-6.jpg"
+          src="/farm11.jpg"
           fill
           alt="gallery-photo"
         />

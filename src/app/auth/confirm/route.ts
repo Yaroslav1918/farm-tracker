@@ -11,29 +11,15 @@ export async function GET(request: NextRequest) {
 
   if (token_hash && type) {
     const supabase = await createClient();
-    const { data: userData, error } = await supabase.auth.verifyOtp({
+    const {  error } = await supabase.auth.verifyOtp({
       type,
       token_hash,
     });
-    if (!error && userData.user) {
-      const { id, user_metadata } = userData.user;
-      const { name, is_inside_worker } = user_metadata;
-
-      const { error: insertError } = await supabase.from("users").insert([
-        {
-          user_id: id,
-          name,
-          is_inside_worker,
-        },
-      ]);
-
-      if (insertError) {
-        redirect("/error");
-      }
-
+    if (!error) {
+      // redirect user to specified redirect URL or root of app
       redirect("/timer");
     }
+  
   }
-
   redirect("/error");
 }

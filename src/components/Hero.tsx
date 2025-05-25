@@ -23,7 +23,8 @@ export default function Hero() {
               Welcome to Farm Hours Tracker
             </h1>
             <p className="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">
-              Specially developed for Latvala Maatila Farms to improve workflow
+              Specially developed for Latvala Maatila Farms to improve workflow and efficiency count 
+              your work hours.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link

@@ -11,7 +11,9 @@ import type { User } from "@supabase/supabase-js";
 const navigation = [
   { name: "Company info", href: "/about" },
   { name: "Gallery", href: "/gallery" },
+  { name: "Contact", href: "/contact" },
   { name: "Hours tracker", href: "/timer", isLoggedIn: true },
+  { name: "Reports", href: "/reports", isLoggedIn: true },
 ];
 
 export default function HeaderClient({ user }: { user: User | null }) {
@@ -87,65 +89,67 @@ export default function HeaderClient({ user }: { user: User | null }) {
         onClose={setMobileMenuOpen}
         className="lg:hidden"
       >
-        <div className="fixed inset-0 z-50" />
-        <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-          <div className="flex items-center justify-between">
-            <a href="#" className="-m-1.5 p-1.5">
-              <Image width={60} height={60} alt="Pig Logo" src="/pig.png" />
-            </a>
-            <button
-              type="button"
+        <div className="fixed inset-0 z-40 bg-black/50" />
+
+        <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full max-w-xs bg-white shadow-xl px-6 py-6 sm:ring-1 sm:ring-gray-900/10">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <Link
+              href="/"
+              className="flex items-center gap-2"
               onClick={() => setMobileMenuOpen(false)}
-              className="-m-2.5 rounded-md p-2.5 text-gray-700"
             >
-              <XMarkIcon aria-hidden="true" className="size-6" />
+              <Image width={48} height={48} src="/pig.png" alt="Pig Logo" />
+
+            </Link>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="rounded-md p-2 text-gray-600 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <XMarkIcon className="h-6 w-6" aria-hidden="true" />
             </button>
           </div>
 
-          <div className="mt-6 flow-root">
-            <div className="-my-6 divide-y divide-gray-500/10">
-              <div className="space-y-2 py-4">
-                {navigation
-                  .filter((item) => !item.isLoggedIn || user)
-                  .map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base/7 text-gray-900 hover:bg-gray-50"
-                    >
-                      {item.name}
-                    </a>
-                  ))}
-              </div>
+          {/* Navigation */}
+          <div className="space-y-4">
+            {navigation
+              .filter((item) => !item.isLoggedIn || user)
+              .map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block rounded-md px-4 py-2 text-base font-medium text-gray-700 hover:bg-indigo-100 transition"
+                >
+                  {item.name}
+                </Link>
+              ))}
+          </div>
 
-              {user ? (
-                <div className="py-2">
-                  <form
-                    action={logout}
-                    onSubmit={() => {
-                      setMobileMenuOpen(false);
-                    }}
-                  >
-                    <button
-                      type="submit"
-                      style={{ cursor: "pointer" }}
-                    >
-                      Logout
-                    </button>
-                  </form>
-                </div>
-              ) : (
-                <div className="py-2">
-                  <Link
-                    href="/signin"
-                    className="-mx-3 block rounded-lg px-3  text-base/7  text-gray-900 hover:bg-gray-50"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Log in
-                  </Link>
-                </div>
-              )}
-            </div>
+          {/* Auth Section */}
+          <div className="mt-8 border-t border-gray-400 pt-4">
+            {user ? (
+              <form
+                action={logout}
+                onSubmit={() => setMobileMenuOpen(false)}
+                className="w-full"
+              >
+                <button
+                  type="submit"
+                  className="w-full rounded-md bg-[#f26d6b] px-4 py-2 text-white font-semibold hover:bg-red-500 transition"
+                >
+                  Logout
+                </button>
+              </form>
+            ) : (
+              <Link
+                href="/signin"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block w-full text-center rounded-md bg-indigo-400 px-4 py-2 text-white font-semibold hover:bg-indigo-500 transition"
+              >
+                Log in
+              </Link>
+            )}
           </div>
         </DialogPanel>
       </Dialog>

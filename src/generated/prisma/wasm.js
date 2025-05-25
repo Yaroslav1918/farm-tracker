@@ -141,6 +141,15 @@ exports.Prisma.WorkSessionScalarFieldEnum = {
   created_at: 'created_at'
 };
 
+exports.Prisma.LunchSessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -162,7 +171,8 @@ exports.KeyType = exports.$Enums.KeyType = {
 
 exports.Prisma.ModelName = {
   User: 'User',
-  WorkSession: 'WorkSession'
+  WorkSession: 'WorkSession',
+  LunchSession: 'LunchSession'
 };
 
 /**
