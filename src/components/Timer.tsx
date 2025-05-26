@@ -32,6 +32,7 @@ const Timer = () => {
     useState("00:00:00");
   const [initialTotalTimeLunchMs, setInitialTotalTimeLunchMs] = useState(0);
   const [canStartExtra, setCanStartExtra] = useState(false);
+  const [loading, setLoading] = useState(false);
   const supabase = createClient();
   useOfflineSync();
 
@@ -67,6 +68,7 @@ const Timer = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      setLoading(true);
       const { data, error: userError } = await supabase.auth.getUser();
       if (userError) {
         setError(userError.message);
@@ -89,6 +91,8 @@ const Timer = () => {
           }
         } catch (err: unknown) {
           setError((err as Error).message);
+        } finally {
+          setLoading(false);
         }
       }
       await fetchTotalWorkTime(user.id);
@@ -129,37 +133,48 @@ const Timer = () => {
   };
 
   const checkLocation = () => {
-    if (!navigator.geolocation) {
-      setError("Geolocation is not supported by your browser.");
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setLocation({ latitude, longitude });
-        const isAtFarm = Object.values(FARM_LOCATIONS).some((farm) =>
-          isWithinRadius(latitude, longitude, farm.latitude, farm.longitude)
-        );
-        if (isAtFarm) {
-          setLocationAllowed(true);
-          setError("");
-        } else {
-          setLocationAllowed(false);
-          setError("You are not at the farm location.");
-        }
-      },
-      (err) => {
-        setError("Failed to retrieve your location: " + err.message);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000, // Optional: 10 seconds max wait
-        maximumAge: 0, // Optional: always fetch fresh position
+    setLoading(true);
+    try {
+      if (!navigator.geolocation) {
+        setError("Geolocation is not supported by your browser.");
+        return;
       }
-    );
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          console.log("🚀 ~ checkLocation ~ latitude, longitude :", latitude, longitude )
+          setLocation({ latitude, longitude });
+          const isAtFarm = Object.values(FARM_LOCATIONS).some((farm) =>
+            isWithinRadius(latitude, longitude, farm.latitude, farm.longitude)
+          );
+          if (isAtFarm) {
+            setLocationAllowed(true);
+            setError("");
+          } else {
+            setLocationAllowed(false);
+            setError("You are not at the farm location.");
+          }
+        },
+        (err) => {
+          setError("Failed to retrieve your location: " + err.message);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 10000,
+        }
+      );
+    } catch (err: unknown) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+   
+    
   };
 
   const handleStartLunch = async () => {
+    setLoading(true);
     if (!user) return;
 
     try {
@@ -174,9 +189,12 @@ const Timer = () => {
       setLunchStartTime(new Date(res.data.startTime));
     } catch (err: unknown) {
       setError((err as Error).message);
+    } finally {
+      setLoading(false);
     }
   };
   const handleEndLunch = async () => {
+    setLoading(true);
     if (!lunchSessionId || !user) return;
 
     try {
@@ -193,9 +211,12 @@ const Timer = () => {
       }
     } catch (err: unknown) {
       setError((err as Error).message);
+    } finally {
+      setLoading(false);
     }
   };
   const handleStartWork = async (keyType: "standard" | "extra") => {
+    setLoading(true);
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -226,10 +247,13 @@ const Timer = () => {
       setStartTime(new Date(res.data.startTime));
     } catch (err: unknown) {
       setError((err as Error).message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleEndWork = async () => {
+    setLoading(true);
     if (!currentSessionId || !user) return;
 
     try {
@@ -246,136 +270,143 @@ const Timer = () => {
       }
     } catch (err: unknown) {
       setError((err as Error).message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col gap-4 p-4 bg-[#fbf5fb] border border-gray-300 rounded-2xl shadow-md w-full max-w-2xl mx-auto mt-40 md:mt-40">
       <h2 className="text-xl font-semibold text-center">Work Timer</h2>
-      <>
-        <button
-          onClick={() => {
-            checkLocation();
-            setLocationChecked(true);
-          }}
-          className="w-full rounded-lg bg-[#D6DAFF] hover:bg-[#C7CCFF] text-gray-800 font-medium py-2 transition cursor-pointer"
-        >
-          Check Location
-        </button>
-        {isInsideWorker ? (
+      {loading ? (
+        <p className="text-center text-sm text-gray-500">Loading...</p>
+      ) : (
+        <>
           <button
-            onClick={() => handleStartWork("standard")}
-            className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
-              currentSessionId ||
-              lunchSessionId ||
-              canStartExtra ||
-              !locationAllowed
-                ? "bg-gray-300 cursor-not-allowed"
-                : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
-            }`}
-            disabled={
-              canStartExtra ||
-              !!currentSessionId ||
-              !!lunchSessionId ||
-              !locationAllowed
-            }
+            disabled={loading}
+            onClick={() => {
+              checkLocation();
+              setLocationChecked(true);
+            }}
+            className="w-full rounded-lg bg-[#D6DAFF] hover:bg-[#C7CCFF] text-gray-800 font-medium py-2 transition cursor-pointer"
           >
-            Start Work / Day (first key)
+            Check Location
           </button>
-        ) : (
-          <button
-            onClick={() => handleStartWork("standard")}
-            className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
-              currentSessionId || lunchSessionId || !locationAllowed
-                ? "bg-gray-300 cursor-not-allowed"
-                : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
-            }`}
-            disabled={
-              !!currentSessionId || !!lunchSessionId || !locationAllowed
-            }
-          >
-            Start Work / Day
-          </button>
-        )}
-
-        {isInsideWorker === true && canStartExtra && (
-          <button
-            onClick={() => handleStartWork("extra")}
-            className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
-              !canStartExtra || !!lunchSessionId || !locationAllowed
-                ? "bg-gray-300 cursor-not-allowed"
-                : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
-            }`}
-            disabled={!canStartExtra || !!lunchSessionId || !locationAllowed}
-          >
-            Start Extra / Weekend (second key)
-          </button>
-        )}
-        {lunchSessionId ? (
-          <button
-            onClick={handleEndLunch}
-            className="w-full rounded-lg bg-orange-300 hover:bg-orange-350 text-gray-800 font-medium py-2 transition cursor-pointer"
-          >
-            End Lunch
-          </button>
-        ) : (
-          <button
-            onClick={handleStartLunch}
-            className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
-              currentSessionId || !locationAllowed
-                ? "bg-gray-300 cursor-not-allowed"
-                : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
-            }`}
-            disabled={!!currentSessionId || !locationAllowed}
-          >
-            Start Lunch
-          </button>
-        )}
-
-        {currentSessionId && (
-          <>
+          {isInsideWorker ? (
             <button
-              onClick={handleEndWork}
-              className="w-full rounded-lg bg-orange-300 hover:bg-orange-350 text-gray-800 font-medium py-2  cursor-pointer"
+              onClick={() => handleStartWork("standard")}
+              className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
+                currentSessionId ||
+                lunchSessionId ||
+                canStartExtra ||
+                !locationAllowed
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
+              }`}
+              disabled={
+                canStartExtra ||
+                !!currentSessionId ||
+                !!lunchSessionId ||
+                !locationAllowed
+              }
             >
-              End Work
+              Start Work / Day (first key)
             </button>
-          </>
-        )}
-
-        {currentSessionId && elapsedTime !== "00:00:00" ? (
-          <div className="text-lg font-mono text-center">
-            ⏱ Work Time: <span className="font-semibold">{elapsedTime}</span>
-          </div>
-        ) : (
-          <div className="text-lg font-mono text-center">
-            🏆 Total work time today:{" "}
-            <span className="font-semibold">{initialTotalTime}</span>
-          </div>
-        )}
-
-        {locationChecked &&
-          (locationAllowed ? (
-            <p className="text-green-500 text-center mt-4">
-              ✅ You are at the farm location.
-            </p>
           ) : (
-            <p className="text-red-500 text-center mt-4">
-              ❌ You are not at the farm location.
-            </p>
-          ))}
-        {lunchSessionId && lunchElapsedTime !== "00:00:00" ? (
-          <div className="text-lg font-mono text-center">
-            🍽️ Lunch Time:{" "}
-            <span className="font-semibold">{lunchElapsedTime}</span>
-          </div>
-        ) : (
-          <div className="text-lg font-mono text-center">
-            🏆 Total lunch time today:{" "}
-            <span className="font-semibold">{initialTotalLunchTime}</span>
-          </div>
-        )}
-      </>
+            <button
+              onClick={() => handleStartWork("standard")}
+              className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
+                currentSessionId || lunchSessionId || !locationAllowed
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
+              }`}
+              disabled={
+                !!currentSessionId || !!lunchSessionId || !locationAllowed
+              }
+            >
+              Start Work / Day
+            </button>
+          )}
+
+          {isInsideWorker === true && canStartExtra && (
+            <button
+              onClick={() => handleStartWork("extra")}
+              className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
+                !canStartExtra || !!lunchSessionId || !locationAllowed
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
+              }`}
+              disabled={!canStartExtra || !!lunchSessionId || !locationAllowed}
+            >
+              Start Extra / Weekend (second key)
+            </button>
+          )}
+          {lunchSessionId ? (
+            <button
+              onClick={handleEndLunch}
+              className="w-full rounded-lg bg-orange-300 hover:bg-orange-350 text-gray-800 font-medium py-2 transition cursor-pointer"
+            >
+              End Lunch
+            </button>
+          ) : (
+            <button
+              onClick={handleStartLunch}
+              className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
+                currentSessionId || !locationAllowed
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
+              }`}
+              disabled={!!currentSessionId || !locationAllowed}
+            >
+              Start Lunch
+            </button>
+          )}
+
+          {currentSessionId && (
+            <>
+              <button
+                onClick={handleEndWork}
+                className="w-full rounded-lg bg-orange-300 hover:bg-orange-350 text-gray-800 font-medium py-2  cursor-pointer"
+              >
+                End Work
+              </button>
+            </>
+          )}
+
+          {currentSessionId && elapsedTime !== "00:00:00" ? (
+            <div className="text-lg font-mono text-center">
+              ⏱ Work Time: <span className="font-semibold">{elapsedTime}</span>
+            </div>
+          ) : (
+            <div className="text-lg font-mono text-center">
+              🏆 Total work time today:{" "}
+              <span className="font-semibold">{initialTotalTime}</span>
+            </div>
+          )}
+
+          {locationChecked &&
+            (locationAllowed ? (
+              <p className="text-green-500 text-center mt-4">
+                ✅ You are at the farm location.
+              </p>
+            ) : (
+              <p className="text-red-500 text-center mt-4">
+                ❌ You are not at the farm location.
+              </p>
+            ))}
+          {lunchSessionId && lunchElapsedTime !== "00:00:00" ? (
+            <div className="text-lg font-mono text-center">
+              🍽️ Lunch Time:{" "}
+              <span className="font-semibold">{lunchElapsedTime}</span>
+            </div>
+          ) : (
+            <div className="text-lg font-mono text-center">
+              🏆 Total lunch time today:{" "}
+              <span className="font-semibold">{initialTotalLunchTime}</span>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };
