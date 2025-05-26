@@ -278,135 +278,133 @@ const Timer = () => {
   return (
     <div className="flex flex-col gap-4 p-4 bg-[#fbf5fb] border border-gray-300 rounded-2xl shadow-md w-full max-w-2xl mx-auto mt-40 md:mt-40">
       <h2 className="text-xl font-semibold text-center">Work Timer</h2>
-      {loading ? (
-        <p className="text-center text-sm text-gray-500">Loading...</p>
-      ) : (
-        <>
+      <>
+        <button
+          disabled={loading}
+          onClick={() => {
+            checkLocation();
+            setLocationChecked(true);
+          }}
+          className="w-full rounded-lg bg-[#D6DAFF] hover:bg-[#C7CCFF] text-gray-800 font-medium py-2 transition cursor-pointer"
+        >
+          Check Location
+        </button>
+        {isInsideWorker ? (
           <button
-            disabled={loading}
-            onClick={() => {
-              checkLocation();
-              setLocationChecked(true);
-            }}
-            className="w-full rounded-lg bg-[#D6DAFF] hover:bg-[#C7CCFF] text-gray-800 font-medium py-2 transition cursor-pointer"
+            onClick={() => handleStartWork("standard")}
+            className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
+              currentSessionId ||
+              lunchSessionId ||
+              canStartExtra ||
+              loading ||
+              !locationAllowed
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
+            }`}
+            disabled={
+              canStartExtra ||
+              !!currentSessionId ||
+              !!lunchSessionId ||
+              !locationAllowed ||
+              loading
+            }
           >
-            Check Location
+            Start Work / Day (first key)
           </button>
-          {isInsideWorker ? (
-            <button
-              onClick={() => handleStartWork("standard")}
-              className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
-                currentSessionId ||
-                lunchSessionId ||
-                canStartExtra ||
-                !locationAllowed
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
-              }`}
-              disabled={
-                canStartExtra ||
-                !!currentSessionId ||
-                !!lunchSessionId ||
-                !locationAllowed
-              }
-            >
-              Start Work / Day (first key)
-            </button>
-          ) : (
-            <button
-              onClick={() => handleStartWork("standard")}
-              className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
-                currentSessionId || lunchSessionId || !locationAllowed
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
-              }`}
-              disabled={
-                !!currentSessionId || !!lunchSessionId || !locationAllowed
-              }
-            >
-              Start Work / Day
-            </button>
-          )}
+        ) : (
+          <button
+            onClick={() => handleStartWork("standard")}
+            className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
+              currentSessionId || lunchSessionId || !locationAllowed
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
+            }`}
+            disabled={
+              !!currentSessionId || !!lunchSessionId || !locationAllowed || loading
+            }
+          >
+            Start Work / Day
+          </button>
+        )}
 
-          {isInsideWorker === true && canStartExtra && (
-            <button
-              onClick={() => handleStartWork("extra")}
-              className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
-                !canStartExtra || !!lunchSessionId || !locationAllowed
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
-              }`}
-              disabled={!canStartExtra || !!lunchSessionId || !locationAllowed}
-            >
-              Start Extra / Weekend (second key)
-            </button>
-          )}
-          {lunchSessionId ? (
-            <button
-              onClick={handleEndLunch}
-              className="w-full rounded-lg bg-orange-300 hover:bg-orange-350 text-gray-800 font-medium py-2 transition cursor-pointer"
-            >
-              End Lunch
-            </button>
-          ) : (
-            <button
-              onClick={handleStartLunch}
-              className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
-                currentSessionId || !locationAllowed
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
-              }`}
-              disabled={!!currentSessionId || !locationAllowed}
-            >
-              Start Lunch
-            </button>
-          )}
+        {isInsideWorker === true && canStartExtra && (
+          <button
+            onClick={() => handleStartWork("extra")}
+            className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
+              !canStartExtra || !!lunchSessionId || !locationAllowed
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
+            }`}
+            disabled={!canStartExtra || !!lunchSessionId || !locationAllowed || loading}
+          >
+            Start Extra / Weekend (second key)
+          </button>
+        )}
+        {lunchSessionId ? (
+          <button
+            onClick={handleEndLunch}
+            className="w-full rounded-lg bg-orange-300 hover:bg-orange-350 text-gray-800 font-medium py-2 transition cursor-pointer"
+          >
+            End Lunch
+          </button>
+        ) : (
+          <button
+            onClick={handleStartLunch}
+            className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
+              currentSessionId || !locationAllowed
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
+            }`}
+            disabled={!!currentSessionId || !locationAllowed || loading}
+          >
+            Start Lunch
+          </button>
+        )}
 
-          {currentSessionId && (
-            <>
-              <button
-                onClick={handleEndWork}
-                className="w-full rounded-lg bg-orange-300 hover:bg-orange-350 text-gray-800 font-medium py-2  cursor-pointer"
-              >
-                End Work
-              </button>
-            </>
-          )}
+        {currentSessionId && (
+          <>
+            <button
+              onClick={handleEndWork}
+              className="w-full rounded-lg bg-orange-300 hover:bg-orange-350 text-gray-800 font-medium py-2  cursor-pointer"
+            >
+              End Work
+            </button>
+          </>
+        )}
 
-          {currentSessionId && elapsedTime !== "00:00:00" ? (
-            <div className="text-lg font-mono text-center">
-              ⏱ Work Time: <span className="font-semibold">{elapsedTime}</span>
-            </div>
-          ) : (
-            <div className="text-lg font-mono text-center">
-              🏆 Total work time today:{" "}
-              <span className="font-semibold">{initialTotalTime}</span>
-            </div>
-          )}
+        {currentSessionId && elapsedTime !== "00:00:00" ? (
+          <div className="text-lg font-mono text-center">
+            ⏱ Work Time: <span className="font-semibold">{elapsedTime}</span>
+          </div>
+        ) : (
+          <div className="text-lg font-mono text-center">
+            🏆 Total work time today:{" "}
+            <span className="font-semibold">{initialTotalTime}</span>
+          </div>
+        )}
 
-          {locationChecked &&
-            (locationAllowed ? (
-              <p className="text-green-500 text-center mt-4">
-                ✅ You are at the farm location.
-              </p>
-            ) : (
-              <p className="text-red-500 text-center mt-4">
-                ❌ You are not at the farm location.
-              </p>
-            ))}
-          {lunchSessionId && lunchElapsedTime !== "00:00:00" ? (
-            <div className="text-lg font-mono text-center">
-              🍽️ Lunch Time:{" "}
-              <span className="font-semibold">{lunchElapsedTime}</span>
-            </div>
+        {locationChecked &&
+          (locationAllowed ? (
+            <p className="text-green-500 text-center mt-4">
+              ✅ You are at the farm location.
+            </p>
           ) : (
-            <div className="text-lg font-mono text-center">
-              🏆 Total lunch time today:{" "}
-              <span className="font-semibold">{initialTotalLunchTime}</span>
-            </div>
-          )}
-        </>
-      )}
+            <p className="text-red-500 text-center mt-4">
+              ❌ You are not at the farm location.
+            </p>
+          ))}
+        {lunchSessionId && lunchElapsedTime !== "00:00:00" ? (
+          <div className="text-lg font-mono text-center">
+            🍽️ Lunch Time:{" "}
+            <span className="font-semibold">{lunchElapsedTime}</span>
+          </div>
+        ) : (
+          <div className="text-lg font-mono text-center">
+            🏆 Total lunch time today:{" "}
+            <span className="font-semibold">{initialTotalLunchTime}</span>
+          </div>
+        )}
+      </>
     </div>
   );
 };
