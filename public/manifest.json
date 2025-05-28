@@ -6,9 +6,6 @@
   "background_color": "#D6DAFF",
   "theme_color": "#D6DAFF",
   "orientation": "portrait-primary",
-  "scope": "/",
-  "prefer_related_applications": false,
-  "related_applications": [],
   "icons": [
     {
       "src": "/pig-192.png",
