@@ -24,6 +24,7 @@ const Timer = () => {
   const [lunchStartTime, setLunchStartTime] = useState<Date | null>(null);
   const [lunchElapsedTime, setLunchElapsedTime] = useState<string>("00:00:00");
 
+
   const [locationChecked, setLocationChecked] = useState(false);
   const [lunchSessionId, setLunchSessionId] = useState<string | null>(null);
   const [initialTotalTimeMs, setInitialTotalTimeMs] = useState(0);
@@ -35,36 +36,6 @@ const Timer = () => {
   const [loading, setLoading] = useState(false);
   const supabase = createClient();
   useOfflineSync();
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (startTime) {
-      timer = setInterval(() => {
-        const now = new Date();
-        const diffMs = now.getTime() - startTime.getTime() + initialTotalTimeMs;
-        const readableTime = formatMilliseconds(diffMs);
-        setElapsedTime(readableTime);
-        setInitialTotalTime(readableTime);
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [startTime, initialTotalTimeMs]);
-
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (lunchStartTime) {
-      timer = setInterval(() => {
-        const now = new Date();
-        const diffMs =
-          now.getTime() - lunchStartTime.getTime() + initialTotalTimeLunchMs;
-        const readableTime = formatMilliseconds(diffMs);
-        setLunchElapsedTime(readableTime);
-        setInitialTotalLunchTime(readableTime);
-      }, 1000);
-    }
-
-    return () => clearInterval(timer);
-  }, [lunchStartTime, initialTotalTimeLunchMs]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -97,9 +68,41 @@ const Timer = () => {
       await fetchTotalWorkTime(user.id);
       await fetchTotalLunchTime(user.id);
     };
-    checkLocation();
     fetchUser();
+    checkLocation();
   }, [supabase.auth]);
+  
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (startTime) {
+      timer = setInterval(() => {
+        const now = new Date();
+        const diffMs = now.getTime() - startTime.getTime() + initialTotalTimeMs;
+        const readableTime = formatMilliseconds(diffMs);
+        setElapsedTime(readableTime);
+        setInitialTotalTime(readableTime);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [startTime, initialTotalTimeMs]);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (lunchStartTime) {
+      timer = setInterval(() => {
+        const now = new Date();
+        const diffMs =
+          now.getTime() - lunchStartTime.getTime() + initialTotalTimeLunchMs;
+        const readableTime = formatMilliseconds(diffMs);
+        setLunchElapsedTime(readableTime);
+        setInitialTotalLunchTime(readableTime);
+      }, 1000);
+    }
+
+    return () => clearInterval(timer);
+  }, [lunchStartTime, initialTotalTimeLunchMs]);
+
+
 
   const fetchTotalWorkTime = async (userId: string) => {
     try {
@@ -294,11 +297,11 @@ const Timer = () => {
           <button
             onClick={() => handleStartWork("standard")}
             className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
+              !locationAllowed ||
               currentSessionId ||
               lunchSessionId ||
               canStartExtra ||
-              loading ||
-              !locationAllowed
+              loading
                 ? "bg-gray-300 cursor-not-allowed"
                 : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
             }`}
@@ -357,7 +360,7 @@ const Timer = () => {
           <button
             onClick={handleStartLunch}
             className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
-              currentSessionId || !locationAllowed || loading 
+              currentSessionId || !locationAllowed || loading
                 ? "bg-gray-300 cursor-not-allowed"
                 : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
             }`}

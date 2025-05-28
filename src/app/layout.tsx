@@ -4,7 +4,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import type { Viewport } from "next";
 
 import Header from "../components/Header";
-import ServiceWorkerRegister from "../components/ServiceWorkerRegister";
 import Footer from "../components/Footer";
 import { AuthProvider } from "../components/AuthContext";
 
@@ -41,7 +40,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
         <AuthProvider>
-          <ServiceWorkerRegister />
           <Header />
           {children}
           <Footer />

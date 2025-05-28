@@ -23,10 +23,16 @@ export const FARM_LOCATIONS = {
     latitude: 62.88067773466881,
     longitude: 22.70282872666923,
   },
-  test: {
-    name: "test",
-    address: "test",
+  test1: {
+    name: "test1",
+    address: "test1",
     latitude: 62.77076263200942,
     longitude: 22.879619914351135,
+  },
+  test2: {
+    name: "test2",
+    address: "test2",
+    latitude: 60.1686016,
+    longitude: 24.936448,
   },
 };
