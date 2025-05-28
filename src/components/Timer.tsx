@@ -74,7 +74,6 @@ const Timer = () => {
         setError(userError.message);
         return;
       }
-      setLocationAllowed(true);
       const user = data?.user;
       setUser(user);
 
@@ -142,7 +141,11 @@ const Timer = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          console.log("🚀 ~ checkLocation ~ latitude, longitude :", latitude, longitude )
+          console.log(
+            "🚀 ~ checkLocation ~ latitude, longitude :",
+            latitude,
+            longitude
+          );
           setLocation({ latitude, longitude });
           const isAtFarm = Object.values(FARM_LOCATIONS).some((farm) =>
             isWithinRadius(latitude, longitude, farm.latitude, farm.longitude)
@@ -169,8 +172,6 @@ const Timer = () => {
     } finally {
       setLoading(false);
     }
-   
-    
   };
 
   const handleStartLunch = async () => {
@@ -320,7 +321,10 @@ const Timer = () => {
                 : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
             }`}
             disabled={
-              !!currentSessionId || !!lunchSessionId || !locationAllowed || loading
+              !!currentSessionId ||
+              !!lunchSessionId ||
+              !locationAllowed ||
+              loading
             }
           >
             Start Work / Day
@@ -335,7 +339,9 @@ const Timer = () => {
                 ? "bg-gray-300 cursor-not-allowed"
                 : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
             }`}
-            disabled={!canStartExtra || !!lunchSessionId || !locationAllowed || loading}
+            disabled={
+              !canStartExtra || !!lunchSessionId || !locationAllowed || loading
+            }
           >
             Start Extra / Weekend (second key)
           </button>
@@ -351,7 +357,7 @@ const Timer = () => {
           <button
             onClick={handleStartLunch}
             className={`w-full rounded-lg   text-gray-800 font-medium py-2 transition  ${
-              currentSessionId || !locationAllowed
+              currentSessionId || !locationAllowed || loading 
                 ? "bg-gray-300 cursor-not-allowed"
                 : "bg-[#D6DAFF] hover:bg-[#C7CCFF] cursor-pointer"
             }`}
