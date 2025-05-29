@@ -106,7 +106,7 @@ const Timer = () => {
     if (storedSession) {
       const { sessionId, startTime } = JSON.parse(storedSession);
       setCurrentSessionId(sessionId);
-      setStartTime(new Date(startTime));// <--- restore start time
+      setStartTime(new Date(startTime));
     }
   }, []);
 
@@ -147,6 +147,7 @@ const Timer = () => {
         setError("Geolocation is not supported by your browser.");
         return;
       }
+      
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;

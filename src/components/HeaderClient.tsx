@@ -28,12 +28,15 @@ export default function HeaderClient({ user }: { user: User | null }) {
         <div className="flex flex-1">
           {/* Logo */}
           <div className="w-16 h-16 sm:w-24 sm:h-24 lg:w-26 lg:h-26 relative cursor-pointer">
-            <Image
-              src="/pig.png"
-              alt="Pig Logo"
-              fill
-              className="object-contain"
-            />
+            <Link href="/">
+              {" "}
+              <Image
+                src="/pig.png"
+                alt="Pig Logo"
+                fill
+                className="object-contain"
+              />{" "}
+            </Link>
           </div>
         </div>
 

@@ -32,9 +32,9 @@ export default function Gallery() {
 
   return (
     <>
-      <section className="w-full bg-white mt-30">
+      <section className="w-full bg-white mt-50">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-600 mb-6 text-center "> Our farms and fields</h2>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 p-10  max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 p-10   max-w-7xl mx-auto">
           {images.map((src, index) => (
             <motion.div
               key={index}
@@ -65,7 +65,7 @@ export default function Gallery() {
             onClick={() => setSelectedImage(null)}
           >
             <motion.div
-              className="relative w-full max-w-5xl h-[80vh] p-4"
+              className="relative w-full max-w-5xl h-[40vh] p-4"
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.9 }}
