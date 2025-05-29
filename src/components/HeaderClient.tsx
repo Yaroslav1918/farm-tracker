@@ -25,11 +25,16 @@ export default function HeaderClient({ user }: { user: User | null }) {
         aria-label="Global"
         className="flex items-center justify-between p-6 lg:px-8"
       >
-        <div className="flex lg:flex-1">
-          <Link href="/" className="-m-1.5 p-1.5">
-            <span className="sr-only">Your Company</span>
-            <Image width={60} height={60} alt="Pig Logo" src="/pig.png" />
-          </Link>
+        <div className="flex flex-1">
+          {/* Logo */}
+          <div className="w-16 h-16 sm:w-24 sm:h-24 lg:w-26 lg:h-26 relative cursor-pointer">
+            <Image
+              src="/pig.png"
+              alt="Pig Logo"
+              fill
+              className="object-contain"
+            />
+          </div>
         </div>
 
         <div className="flex lg:hidden">
@@ -51,7 +56,7 @@ export default function HeaderClient({ user }: { user: User | null }) {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="text-lg font-semibold text-gray-900 cursor-pointer hover:text-gray-700 me-4 md:me-6"
+                  className="text-lg font-semibold text-gray-900 cursor-pointer hover:text-gray-700 me-4 md:me-6 "
                 >
                   {item.name}
                 </Link>
@@ -100,7 +105,6 @@ export default function HeaderClient({ user }: { user: User | null }) {
               onClick={() => setMobileMenuOpen(false)}
             >
               <Image width={48} height={48} src="/pig.png" alt="Pig Logo" />
-
             </Link>
             <button
               onClick={() => setMobileMenuOpen(false)}

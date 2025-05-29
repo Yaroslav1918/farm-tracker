@@ -24,7 +24,6 @@ const Timer = () => {
   const [lunchStartTime, setLunchStartTime] = useState<Date | null>(null);
   const [lunchElapsedTime, setLunchElapsedTime] = useState<string>("00:00:00");
 
-
   const [locationChecked, setLocationChecked] = useState(false);
   const [lunchSessionId, setLunchSessionId] = useState<string | null>(null);
   const [initialTotalTimeMs, setInitialTotalTimeMs] = useState(0);
@@ -71,7 +70,7 @@ const Timer = () => {
     fetchUser();
     checkLocation();
   }, [supabase.auth]);
-  
+
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (startTime) {
@@ -102,7 +101,14 @@ const Timer = () => {
     return () => clearInterval(timer);
   }, [lunchStartTime, initialTotalTimeLunchMs]);
 
-
+  useEffect(() => {
+    const storedSession = localStorage.getItem("workSession");
+    if (storedSession) {
+      const { sessionId, startTime } = JSON.parse(storedSession);
+      setCurrentSessionId(sessionId);
+      setStartTime(new Date(startTime));// <--- restore start time
+    }
+  }, []);
 
   const fetchTotalWorkTime = async (userId: string) => {
     try {
@@ -144,11 +150,7 @@ const Timer = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          console.log(
-            "🚀 ~ checkLocation ~ latitude, longitude :",
-            latitude,
-            longitude
-          );
+
           setLocation({ latitude, longitude });
           const isAtFarm = Object.values(FARM_LOCATIONS).some((farm) =>
             isWithinRadius(latitude, longitude, farm.latitude, farm.longitude)
@@ -245,7 +247,10 @@ const Timer = () => {
       });
       localStorage.setItem(
         "workSession",
-        JSON.stringify({ sessionId: res.data.sessionId })
+        JSON.stringify({
+          sessionId: res.data.sessionId,
+          startTime: res.data.startTime,
+        })
       );
       setCurrentSessionId(res.data.sessionId);
       setStartTime(new Date(res.data.startTime));

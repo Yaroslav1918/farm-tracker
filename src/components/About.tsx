@@ -1,4 +1,3 @@
-
 export default function About() {
   return (
     <section className="max-w-4xl mx-auto px-6 py-12 bg-white rounded-2xl shadow-md relative isolate mt-30">
@@ -7,10 +6,16 @@ export default function About() {
       </h2>
 
       <p className="text-lg text-gray-700 mb-5 leading-relaxed">
-        <strong className="text-gray-900">Latvala Maatila Oy</strong> was
-        established in 2005 and is proudly located in Seinäjoki, Finland. Our
-        core mission is to provide top-tier agricultural services that support
-        sustainable farming and efficient food production.
+        <strong className="text-gray-900">Latvala Farms</strong> officially
+        registered as Latvalan Maatila Oy, is a family-owned farm located in
+        Seinäjoki, Southern Ostrobothnia, Finland. Established in 2005, the farm
+        combines crop cultivation and livestock farming, operating as a
+        traditional mixed farm with modern practices. Latvala Farms specializes
+        in pig farming, and over the years, the operation has expanded through
+        strategic investments. In 2004, the farm launched Sikako Oy to focus on
+        growing pigs for meat production. Later, in 2016, they established
+        LatvaPork Oy, acquiring a piggery in Koskenkorva to further strengthen
+        their operations.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
