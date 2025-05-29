@@ -95,7 +95,7 @@ export default function HeaderClient({ user }: { user: User | null }) {
       <Dialog
         open={mobileMenuOpen}
         onClose={setMobileMenuOpen}
-        className="lg:hidden"
+        className="lg:hidden z-50"
       >
         <div className="fixed inset-0 z-40 bg-black/50" />
 
